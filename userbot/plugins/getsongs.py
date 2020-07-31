@@ -30,6 +30,9 @@ from telethon.tl.types import DocumentAttributeVideo
 import pybase64
 from telethon.tl.functions.messages import ImportChatInviteRequest as Get
 
+DEFAULTUSER = str(ALIVE_NAME) if ALIVE_NAME else "cat"
+USERNAME = str(Config.LIVE_USERNAME) if Config.LIVE_USERNAME else "@Ramvans
+
 @borg.on(admin_cmd(pattern="song(?: |$)(.*)"))
 async def _(event):
     reply_to_id = event.message.id
@@ -190,7 +193,7 @@ async def _(event):
     os.system("rm -rf *.mp4")
     os.system("rm -rf *.webm")    
     
-@borg.on(sudo_cmd(pattern="song320(?: |$)(.*)", allow_sudo = True))
+   @borg.on(sudo_cmd(pattern="song(?: |$)(.*)", allow_sudo = True))
 async def _(event):
     reply_to_id = event.message.id
     if event.reply_to_msg_id:
@@ -221,14 +224,74 @@ async def _(event):
     await borg.send_file(
                 event.chat_id,
                 loa,
-                force_document=False,
+                force_document=True,
                 allow_cache=False,
-                caption=query,
+                caption=f"➥ __**Song :- {query}**__\n__**➥ Uploaded by :-**__ [{DEFAULTUSER}]({USERNAME})",
                 reply_to=reply_to_id
             )
     await san.delete()
     os.system("rm -rf *.mp3")
     subprocess.check_output("rm -rf *.mp3",shell=True)
+
+    
+@borg.on(sudo_cmd(pattern="vsong(?: |$)(.*)", allow_sudo = True))
+async def _(event):
+    reply_to_id = event.message.id
+    if event.reply_to_msg_id:
+        reply_to_id = event.reply_to_msg_id
+    reply = await event.get_reply_message()
+    if event.pattern_match.group(1):
+        query = event.pattern_match.group(1)
+        await event.edit("wi8..! I am finding your videosong....")
+    elif reply.message:
+        query = reply.message
+        await event.edit("wi8..! I am finding your videosong....")
+    else:
+        await event.edit("What I am Supposed to find")
+        return
+    await catmusicvideo(query)
+    try:
+        cat = pybase64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
+        cat = Get(cat)
+        await event.client(cat)
+    except:
+        pass
+    l = glob.glob(("*.mp4")) + glob.glob(("*.mkv")) + glob.glob(("*.webm")) 
+    if l:
+        await event.edit("yeah..! i found something wi8..🥰")
+    else:
+        await event.edit(f"Sorry..! i can't find anything with `{query}`")
+    loa = l[0]  
+    metadata = extractMetadata(createParser(loa))
+    duration = 0
+    width = 0
+    height = 0
+    if metadata.has("duration"):
+        duration = metadata.get("duration").seconds
+    if metadata.has("width"):
+        width = metadata.get("width")
+    if metadata.has("height"):
+        height = metadata.get("height")
+    await borg.send_file(
+                event.chat_id,
+                loa,
+                force_document=True,
+                allow_cache=False,
+                caption=f"➥ __**Song :- {query}**__\n__**➥ Uploaded by :-**__ [{DEFAULTUSER}]({USERNAME})",
+                supports_streaming=True,
+                reply_to=reply_to_id,
+                attributes=[DocumentAttributeVideo(
+                                duration=duration,
+                                w=width,
+                                h=height,
+                                round_message=False,
+                                supports_streaming=True,
+                            )],
+            )
+    await event.delete()
+    os.system("rm -rf *.mkv")
+    os.system("rm -rf *.mp4")
+    os.system("rm -rf *. 
     
 CMD_HELP.update({"getmusic":
     "`.song` query or `.song` reply to song name :\
