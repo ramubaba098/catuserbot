@@ -190,7 +190,7 @@ async def _(event):
     os.system("rm -rf *.mp4")
     os.system("rm -rf *.webm")    
     
-@borg.on(sudo_cmd(pattern="song(?: |$)(.*)", allow_sudo = True))
+@borg.on(sudo_cmd(pattern="song320(?: |$)(.*)", allow_sudo = True))
 async def _(event):
     reply_to_id = event.message.id
     if event.reply_to_msg_id:
